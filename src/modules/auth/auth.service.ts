@@ -34,7 +34,7 @@ const createUserIntoDB = async(payload:{
     );
     return newUser.rows[0]
 }
-
+// login
 const loginUserIntoDB = async(payload: {
     email: string;
     password:string
