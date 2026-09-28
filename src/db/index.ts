@@ -11,7 +11,7 @@ export const initDB  = async() => {
       CREATE TABLE IF NOT EXISTS users(
       id SERIAL PRIMARY KEY,
       name VARCHAR(20),
-      email VARCHAR(20) UNIQUE NOT NULL,
+      email TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       is_active BOOLEAN DEFAULT true,
       age INT,

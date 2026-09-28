@@ -1,11 +1,41 @@
-
-
 import bcrypt from "bcryptjs";
 import { pool } from "../../db";
 import jwt from 'jsonwebtoken'
 import config from '../../config';
 
-const loginUserIntDB = async(payload: {
+
+// Rgister service
+
+const createUserIntoDB = async(payload:{
+    name: string;
+    email: string;
+    password: string;
+    age?: number
+}) =>{
+
+    const {name, email, password} = payload;
+    const userExist = await pool.query(
+         `SELECT * FROM users WHERE email=$1
+        `,
+        [email]
+    )
+    if(userExist.rows.length > 0){
+        throw new Error("User already exists with this email!")
+    }
+    // haspassword
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    // Insert into DB
+    const newUser = await pool.query(
+        `INSERT INTO users (name, email, password) 
+         VALUES ($1, $2, $3) 
+         RETURNING id, name, email, is_active`,
+        [name, email, hashedPassword]
+    );
+    return newUser.rows[0]
+}
+
+const loginUserIntoDB = async(payload: {
     email: string;
     password:string
 })=>{
@@ -44,5 +74,6 @@ const loginUserIntDB = async(payload: {
 }
 
 export const authService = {
-    loginUserIntDB
+   loginUserIntoDB,
+   createUserIntoDB
 }

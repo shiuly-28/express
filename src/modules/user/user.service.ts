@@ -11,8 +11,8 @@ const createUserIntroDB = async (payload: IUser) => {
     console.log(hashPassword)
 
      const result = await pool.query(`
-    INSERT INTO users(name, email, password, age) VALUES($1,$2,$3,$4) RETURNING 
-    name, email, age, created_at, updated_at`
+    INSERT INTO users(name, email, password, age) VALUES($1,$2,$3,$4) RETURNING *
+    `
     , [name, email, hashPassword, age],
 
 );
