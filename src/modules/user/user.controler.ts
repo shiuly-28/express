@@ -2,27 +2,32 @@ import type { Request, Response } from "express";
 import { pool } from "../../db";
 import { userService } from "./user.service";
 
-const createUser = async(req: Request, res: Response) => {
-  // console.log(req.body)
-  const {name, email, password, age} = req.body;
-  try{
-    const result = await userService.createUserIntroDB(req.body);
-    // console.log(result)
-  res.status(201).json({
-      success: false,
-    message: "User Created Successfully!",
-    data:result.rows[0]
-  })
-  }catch(error : any){
-     res.status(500).json({
-    success: false,
-    message: error.message,
-    error:error
-    
-  })
-  }
-}
+const createUser = async (req: Request, res: Response) => {
+  try {
+    // req.body না থাকলে আগে থামিয়ে দিবে
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Request body cannot be empty",
+      });
+    }
 
+    const { name, email, password, age } = req.body;
+    const result = await userService.createUserIntroDB(req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: "User Created Successfully!",
+      data: result.rows[0],
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
 const getAllUsers = async(req:Request, res: Response)=>{
   try{
     const result = await userService.getAllUsersFromDB();
