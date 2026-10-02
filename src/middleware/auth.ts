@@ -2,10 +2,14 @@ import type { NextFunction, Request, Response } from "express"
 import jwt, { type JwtPayload } from "jsonwebtoken"
 import config from "../config";
 import { pool } from "../db";
-const auth = () => {
+import type { ROLES } from "../types";
+
+
+const auth = (...roles : ROLES[]) => {
     return async (req : Request, res : Response, next : NextFunction) => {
-    // console.log("This is protected route")
-    // console.log(req.headers.authorization)
+    console.log(roles)
+   try{
+     // console.log(req.headers.authorization)
     const token = req.headers.authorization
 
     if(!token){
@@ -32,13 +36,27 @@ const auth = () => {
     })
    }
 
-   if(!user.is_active){
+   if(!user?.is_active){
     res.status(403).json({
       success:false,
     message: "Forbidden!!",
    })
    }
+
+  //  console.log("Auth Role :", user.role);
+
+  if(roles.length && !roles.includes(user.role)){
+      res.status(403).json({
+      success:false,
+    message: "Forbidden!! This is not role base",
+   })
+  }
+
+   req.user = decoded
   next()
+   }catch(error){
+    next(error)
+   }
 };
 };
 

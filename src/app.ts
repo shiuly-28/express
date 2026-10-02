@@ -10,13 +10,16 @@ import { profileRoute } from "./modules/profile/profile.route";
 import { productRouter } from "./modules/product/product.route";
 import { authRoute } from "./modules/auth/auth.route";
 import logger from "./middleware/logger";
+import cookieParser from "cookie-parser";
 
 
 const app : Application = express()
 // const port = config.port;
 
 app.use(express.json())
+
 app.use(express.text())
+app.use(cookieParser());
 app.use(express.urlencoded({extended : true}))
 
 app.use(logger);
