@@ -11,6 +11,7 @@ import { productRouter } from "./modules/product/product.route";
 import { authRoute } from "./modules/auth/auth.route";
 import logger from "./middleware/logger";
 import cookieParser from "cookie-parser";
+import cors from "cors"
 
 
 const app : Application = express()
@@ -23,6 +24,11 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended : true}))
 
 app.use(logger);
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+}))
+
 
 app.use("/api/users", userRoute);
 app.use("/api/profile", profileRoute);

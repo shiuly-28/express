@@ -35,7 +35,7 @@ try{
 const result = await authService.loginUserIntoDB(req.body)
 const { accessToken } = result;
 
-res.cookie("token", accessToken,{
+res.cookie("refreshToken", result.refreshToken,{
   httpOnly:true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax",
@@ -44,7 +44,10 @@ res.cookie("token", accessToken,{
      res.status(200).json({
     success:true,
     message: "User logged in successfully!",
-    data: result
+    data: {
+      accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+    }
      });
      
 }catch(error: any){
@@ -59,7 +62,24 @@ res.cookie("token", accessToken,{
 // refresh token
 
 const refreshToken = async(req: Request, res: Response) =>{
-console.log(req.cookies)
+try{
+const result = await authService.generateFreshToken(
+  req.cookies.refreshToken
+)
+
+res.status(200).json({
+    success:true,
+    message: "Access token Generate",
+    data: result
+     });
+     
+}catch(error: any){
+    res.status(401).json({
+        success: false,
+        message: error.message || "Invalid credentials",
+        error: error,
+      })
+}
 }
 
 export const authControler = {
